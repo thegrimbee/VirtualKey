@@ -1,6 +1,8 @@
 import { Text, View, StyleSheet, TextInput, TouchableOpacity} from "react-native";
 import { Link } from 'expo-router';
 import { styles } from './styles';
+import LottieView from "lottie-react-native";
+import React from "react";
 
 export default function Login() {
   return (
