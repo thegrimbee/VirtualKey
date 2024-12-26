@@ -9,5 +9,5 @@ export const styles = StyleSheet.create({
   });
 
 export const tabOptions = {
-    // headerShown: false,
+    headerShown: false,
 };
