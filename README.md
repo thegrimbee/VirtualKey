@@ -13,3 +13,7 @@ VirtualKey is an Android authenticator with a fun ‘twist’. To authenticate, 
 
 *Steps 3-5 are temporary and will be replaced once we have a server of our own
 
+# How to Use
+1. Register / login to the app
+2. 
+
