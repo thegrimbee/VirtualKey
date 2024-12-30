@@ -85,6 +85,15 @@ export const styles = StyleSheet.create({
       fontSize: 16,
       color: 'black',
     },
+    buttonText: {
+      color: '#fff',
+      fontSize: 16,
+    },
+    responseText: {
+      marginTop: 20,
+      fontSize: 16,
+      color: 'black',
+    },
   });
 
 export const tabOptions = {

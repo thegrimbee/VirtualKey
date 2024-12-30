@@ -1,63 +1,42 @@
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import React, { useState, useEffect, useRef } from 'react';
 import { styles } from './styles';
 import LottieView from 'lottie-react-native';
-import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+// import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
 
 export default function Lock() {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [nfcDetected, setNfcDetected] = useState(false);
-  const [detectingNfc, setDetectingNfc] = useState(false);
-  const [nfcData, setNfcData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [responseData, setResponseData] = useState(null);
   const animationRef = useRef<LottieView>(null);
+  const apiURL = 'http://192.168.126.247:8000/test';
 
-  useEffect(() => {
-    // Initialize the NFC manager when the component mounts
-    NfcManager.start();
-
-    // Cleanup function to stop the NFC manager when the component unmounts
-    return () => {
-      NfcManager.setEventListener(NfcTech.Ndef, null);
-      NfcManager.stop();
+  const sendRequest = async () => {
+    setLoading(true);
+    const requestData = {
+      username: 'test1',
+      received_hash: 'test2',
     };
-  }, []); // Empty dependencies array means this runs only once after the initial render
-
-  const startNfcDetection = async () => {
-    setDetectingNfc(true);
     try {
-      await NfcManager.requestTechnology(NfcTech.Ndef);
-      const tag = await NfcManager.getTag();
-      console.log('NFC Tag:', tag);
-      setNfcDetected(true);
-      setNfcData(tag);
-      setIsUnlocked(true);
-      animationRef.current?.play();
-      console.log("Lock opened with NFC!");
-    } catch (ex) {
-      console.warn(ex);
+      const response = await fetch(apiURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+      const data = await response.json();
+      setResponseData(data);
+      console.log('Response data:', data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
     } finally {
-      NfcManager.cancelTechnologyRequest();
-      setDetectingNfc(false);
-    }
-  };
-
-  const writeNfcData = async () => {
-    try {
-      await NfcManager.requestTechnology(NfcTech.Ndef);
-      const bytes = Ndef.encodeMessage([Ndef.textRecord('Hello from React Native!')]);
-      await NfcManager.writeNdefMessage(bytes);
-      console.log('NFC data written successfully!');
-    } catch (ex) {
-      console.warn(ex);
-    } finally {
-      NfcManager.cancelTechnologyRequest();
+      setLoading(false);
     }
   };
 
   const resetLock = () => {
     setIsUnlocked(false);
-    setNfcDetected(false);
-    setNfcData(null);
     animationRef.current?.reset();
     console.log("Lock reset!");
   };
@@ -71,29 +50,19 @@ export default function Lock() {
         loop={false}
         style={styles.lottie}
       />
-      {isUnlocked && (
-        <Text style={styles.unlockedText}>Lock is opened!</Text>
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {!loading && (
+        <TouchableOpacity onPress={sendRequest} style={styles.button}>
+          <Text style={styles.buttonText}>Send Request</Text>
+        </TouchableOpacity>
+      )}
+      {responseData && (
+        <Text style={styles.responseText}>Response: {JSON.stringify(responseData)}</Text>
       )}
       {isUnlocked && (
         <TouchableOpacity onPress={resetLock} style={styles.resetButton}>
           <Text style={styles.resetButtonText}>Reset Lock</Text>
         </TouchableOpacity>
-      )}
-      {!isUnlocked && (
-        <TouchableOpacity onPress={startNfcDetection} style={styles.nfcButton}>
-          <Text style={styles.nfcButtonText}>
-            {detectingNfc ? 'Detecting NFC...' : 'Start NFC Detection'}
-          </Text>
-        </TouchableOpacity>
-      )}
-      {nfcDetected && (
-        <Text style={styles.nfcText}>NFC Device Detected!</Text>
-      )}
-      <TouchableOpacity onPress={writeNfcData} style={styles.writeButton}>
-        <Text style={styles.writeButtonText}>Write NFC Data</Text>
-      </TouchableOpacity>
-      {nfcData && (
-        <Text style={styles.nfcDataText}>NFC Data: {JSON.stringify(nfcData)}</Text>
       )}
     </View>
   );
