@@ -55,6 +55,36 @@ export const styles = StyleSheet.create({
       color: '#fff',
       fontSize: 16,
     },
+    nfcButton: {
+      marginTop: 20,
+      padding: 10,
+      backgroundColor: '#32CD32',
+      borderRadius: 5,
+    },
+    nfcButtonText: {
+      color: '#fff',
+      fontSize: 16,
+    },
+    writeButton: {
+      marginTop: 20,
+      padding: 10,
+      backgroundColor: '#FF6347',
+      borderRadius: 5,
+    },
+    writeButtonText: {
+      color: '#fff',
+      fontSize: 16,
+    },
+    nfcText: {
+      marginTop: 20,
+      fontSize: 18,
+      color: 'blue',
+    },
+    nfcDataText: {
+      marginTop: 20,
+      fontSize: 16,
+      color: 'black',
+    },
   });
 
 export const tabOptions = {
